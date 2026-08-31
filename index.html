@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Gerenciador Nutricional</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .menu {
+            display: none;
+        }
+
+        .menu.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ff5252;
+        }
+
+        .menu-options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .menu-btn {
+            padding: 15px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        .menu-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .resultado {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .resultado h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .resultado-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+
+        .resultado-item:last-child {
+            border-bottom: none;
+        }
+
+        .resultado-item strong {
+            color: #333;
+        }
+
+        .resultado-item span {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .alerta {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .alerta-baixo {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .alerta-moderado {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .alerta-alto {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .tabela-referencia {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+
+        table td {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .historico-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .historico-item h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .historico-item p {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .vazio {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        .emoji {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><span class="emoji">🥗</span>Gerenciador Nutricional</h1>
+            <p>Sistema de avaliação IMC e recomendações nutricionais</p>
+        </div>
+
+        <!-- MENU PRINCIPAL -->
+        <div id="menuPrincipal" class="menu active">
+            <div class="menu-options">
+                <button class="menu-btn" onclick="mostrarMenu('cadastro')">
+                    <span class="emoji">📊</span> 1. Cadastrar Nova Avaliação
+                </button>
+                <button class="menu-btn" onclick="mostrarMenu('tabela')">
+                    <span class="emoji">📋</span> 2. Ver Tabela de Referência
+                </button>
+                <button class="menu-btn" onclick="mostrarMenu('historico')">
+                    <span class="emoji">💾</span> 3. Ver Histórico
+                </button>
+            </div>
+        </div>
+
+        <!-- CADASTRO -->
+        <div id="menuCadastro" class="menu">
+            <h2 style="color: #667eea; margin-bottom: 20px;">Cadastro de Avaliação</h2>
+            
+            <div class="form-group">
+                <label>Nome do Paciente</label>
+                <input type="text" id="nome" placeholder="Ex: João Silva">
+            </div>
+
+            <div class="form-group">
+                <label>Idade (anos)</label>
+                <input type="number" id="idade" placeholder="Ex: 30">
+            </div>
+
+            <div class="form-group">
+                <label>Sexo</label>
+                <select id="sexo">
+                    <option value="">Selecione...</option>
+                    <option value="M">Masculino</option>
+                    <option value="F">Feminino</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Peso (kg)</label>
+                <input type="number" id="peso" placeholder="Ex: 85" step="0.1">
+            </div>
+
+            <div class="form-group">
+                <label>Altura (m)</label>
+                <input type="number" id="altura" placeholder="Ex: 1.80" step="0.01">
+            </div>
+
+            <div class="buttons">
+                <button class="btn-primary" onclick="calcularImc()">Calcular</button>
+                <button class="btn-secondary" onclick="voltarMenu()">Voltar</button>
+            </div>
+
+            <div id="resultadoCadastro"></div>
+        </div>
+
+        <!-- TABELA -->
+        <div id="menuTabela" class="menu">
+            <h2 style="color: #667eea; margin-bottom: 20px;">Tabela IMC - OMS</h2>
+            
+            <div class="tabela-referencia">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Faixa IMC</th>
+                            <th>Classificação</th>
+                            <th>Risco</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>&lt; 18.5</td>
+                            <td>Abaixo do peso</td>
+                            <td>Baixo</td>
+                        </tr>
+                        <tr>
+                            <td>18.5 - 24.9</td>
+                            <td>Peso normal</td>
+                            <td>Ideal ✓</td>
+                        </tr>
+                        <tr>
+                            <td>25.0 - 29.9</td>
+                            <td>Sobrepeso</td>
+                            <td>Moderado</td>
+                        </tr>
+                        <tr>
+                            <td>30.0 - 34.9</td>
+                            <td>Obesidade Grau I</td>
+                            <td>Elevado</td>
+                        </tr>
+                        <tr>
+                            <td>35.0 - 39.9</td>
+                            <td>Obesidade Grau II</td>
+                            <td>Muito Elevado</td>
+                        </tr>
+                        <tr>
+                            <td>≥ 40.0</td>
+                            <td>Obesidade Grau III</td>
+                            <td>Extremo</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="buttons" style="margin-top: 30px;">
+                <button class="btn-secondary" onclick="voltarMenu()">Voltar</button>
+            </div>
+        </div>
+
+        <!-- HISTÓRICO -->
+        <div id="menuHistorico" class="menu">
+            <h2 style="color: #667eea; margin-bottom: 20px;">Histórico de Avaliações</h2>
+            
+            <div id="listaHistorico"></div>
+
+            <div class="buttons" style="margin-top: 30px;">
+                <button class="btn-danger" onclick="limparHistorico()" style="display: none;" id="btnLimpar">Limpar Histórico</button>
+                <button class="btn-secondary" onclick="voltarMenu()">Voltar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let historico = JSON.parse(localStorage.getItem('historico')) || [];
+
+        function mostrarMenu(menu) {
+            document.getElementById('menuPrincipal').classList.remove('active');
+            document.getElementById('menuCadastro').classList.remove('active');
+            document.getElementById('menuTabela').classList.remove('active');
+            document.getElementById('menuHistorico').classList.remove('active');
+
+            if (menu === 'cadastro') {
+                document.getElementById('menuCadastro').classList.add('active');
+                limparFormulario();
+            } else if (menu === 'tabela') {
+                document.getElementById('menuTabela').classList.add('active');
+            } else if (menu === 'historico') {
+                document.getElementById('menuHistorico').classList.add('active');
+                exibirHistorico();
+            }
+        }
+
+        function voltarMenu() {
+            document.getElementById('menuPrincipal').classList.add('active');
+            document.getElementById('menuCadastro').classList.remove('active');
+            document.getElementById('menuTabela').classList.remove('active');
+            document.getElementById('menuHistorico').classList.remove('active');
+        }
+
+        function limparFormulario() {
+            document.getElementById('nome').value = '';
+            document.getElementById('idade').value = '';
+            document.getElementById('sexo').value = '';
+            document.getElementById('peso').value = '';
+            document.getElementById('altura').value = '';
+            document.getElementById('resultadoCadastro').innerHTML = '';
+        }
+
+        function calcularImc() {
+            const nome = document.getElementById('nome').value;
+            const idade = parseInt(document.getElementById('idade').value);
+            const sexo = document.getElementById('sexo').value;
+            const peso = parseFloat(document.getElementById('peso').value);
+            const altura = parseFloat(document.getElementById('altura').value);
+
+            if (!nome || !idade || !sexo || !peso || !altura) {
+                alert('⚠️ Por favor, preencha todos os campos!');
+                return;
+            }
+
+            const imc = peso / (altura * altura);
+            const { classificacao, risco, nivelRisco } = obterClassificacao(imc);
+            const agua = (peso * 35) / 1000;
+            const tmb = calcularTmb(peso, altura * 100, idade, sexo);
+            const data = new Date().toLocaleString('pt-BR');
+
+            const registro = {
+                data,
+                nome,
+                imc: imc.toFixed(2),
+                classificacao,
+                agua: agua.toFixed(2),
+                tmb: tmb.toFixed(0),
+                risco
+            };
+
+            historico.push(registro);
+            localStorage.setItem('historico', JSON.stringify(historico));
+
+            exibirResultado(imc, classificacao, risco, agua, tmb, nivelRisco);
+        }
+
+        function obterClassificacao(imc) {
+            if (imc < 18.5) {
+                return {
+                    classificacao: 'Abaixo do peso',
+                    risco: 'Risco de desnutrição e deficiências de micronutrientes',
+                    nivelRisco: 'baixo'
+                };
+            } else if (imc < 25.0) {
+                return {
+                    classificacao: 'Peso normal (Eutrofia)',
+                    risco: 'Menor risco para complicações de saúde',
+                    nivelRisco: 'ideal'
+                };
+            } else if (imc < 30.0) {
+                return {
+                    classificacao: 'Sobrepeso (Pré-obesidade)',
+                    risco: 'Risco moderado para diabetes tipo 2 e doenças cardiovasculares',
+                    nivelRisco: 'moderado'
+                };
+            } else if (imc < 35.0) {
+                return {
+                    classificacao: 'Obesidade Grau I',
+                    risco: 'Risco elevado para hipertensão, diabetes e colesterol alto',
+                    nivelRisco: 'alto'
+                };
+            } else if (imc < 40.0) {
+                return {
+                    classificacao: 'Obesidade Grau II (Severa)',
+                    risco: 'Risco muito elevado para múltiplas comorbidades',
+                    nivelRisco: 'alto'
+                };
+            } else {
+                return {
+                    classificacao: 'Obesidade Grau III (Mórbida)',
+                    risco: 'Risco extremamente elevado e iminente à saúde',
+                    nivelRisco: 'alto'
+                };
+            }
+        }
+
+        function calcularTmb(peso, altura, idade, sexo) {
+            if (sexo === 'M') {
+                return (10 * peso) + (6.25 * altura) - (5 * idade) + 5;
+            } else {
+                return (10 * peso) + (6.25 * altura) - (5 * idade) - 161;
+            }
+        }
+
+        function exibirResultado(imc, classificacao, risco, agua, tmb, nivelRisco) {
+            const classeAlerta = nivelRisco === 'ideal' ? 'alerta-baixo' : 
+                                 nivelRisco === 'moderado' ? 'alerta-moderado' : 
+                                 'alerta-alto';
+
+            const html = `
+                <div class="resultado">
+                    <h3>📊 Relatório Nutricional</h3>
+                    <div class="resultado-item">
+                        <strong>IMC Calculado:</strong>
+                        <span>${imc.toFixed(2)} kg/m²</span>
+                    </div>
+                    <div class="resultado-item">
+                        <strong>Diagnóstico:</strong>
+                        <span>${classificacao}</span>
+                    </div>
+                    <div class="resultado-item">
+                        <strong>Ingestão de Água:</strong>
+                        <span>~${agua.toFixed(2)} L/dia</span>
+                    </div>
+                    <div class="resultado-item">
+                        <strong>Gasto Basal (TMB):</strong>
+                        <span>~${tmb.toFixed(0)} kcal/dia</span>
+                    </div>
+                    <div class="alerta ${classeAlerta}">
+                        <strong>⚠️ Alerta de Saúde:</strong><br>
+                        ${risco}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('resultadoCadastro').innerHTML = html;
+        }
+
+        function exibirHistorico() {
+            const container = document.getElementById('listaHistorico');
+            
+            if (historico.length === 0) {
+                container.innerHTML = '<div class="vazio">📭 Nenhum registro encontrado</div>';
+                document.getElementById('btnLimpar').style.display = 'none';
+            } else {
+                let html = '';
+                historico.forEach((reg, index) => {
+                    html += `
+                        <div class="historico-item">
+                            <h4>${index + 1}. ${reg.nome}</h4>
+                            <p><strong>Data:</strong> ${reg.data}</p>
+                            <p><strong>IMC:</strong> ${reg.imc} kg/m² (${reg.classificacao})</p>
+                            <p><strong>Água:</strong> ${reg.agua} L/dia | <strong>TMB:</strong> ${reg.tmb} kcal/dia</p>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+                document.getElementById('btnLimpar').style.display = 'block';
+            }
+        }
+
+        function limparHistorico() {
+            if (confirm('Tem certeza que deseja limpar todo o histórico?')) {
+                historico = [];
+                localStorage.clear();
+                exibirHistorico();
+            }
+        }
+    </script>
+</body>
+</html>
